@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-web-to-nginx
+spec:
+  type: LoadBalancer
+  selector:
+    app: k8s-web-to-nginx
+  ports:
+  - port: 3333
+    targetPort: 3000 # expose port
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-web-to-nginx
+spec:
+  selector:
+    matchLabels:
+      app: k8s-web-to-nginx # which pod to manage
+  replicas: 2 # desired number of pods
+
+  # template for the pod - kind is not needed here 
+  template:
+    metadata:
+      labels:
+        app: k8s-web-to-nginx # same as selector above - label for the pod
+    spec:
+      containers: # this is a sequence (list)
+      - name: k8s-web-to-nginx # one item of the list (a mapping/object)
+        image: dustycs/k8s-web-to-nginx # fields inside the mapping: no dash
+        resources: # nested mapping
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+          requests:
+            memory: "64Mi"    # steady expected memory
+            cpu: "100m"  
+        ports: # ports can be a list too
+        - containerPort: 3000 # each port is an item in the ports list

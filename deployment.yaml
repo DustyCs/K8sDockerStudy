@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-web-hello
+spec:
+  selector:
+    matchLabels:
+      app: k8s-web-hello # which pod to manage
+  replicas: 3 # desired number of pods
+
+  # template for the pod - kind is not needed here 
+  template:
+    metadata:
+      labels:
+        app: k8s-web-hello # same as selector above - label for the pod
+    spec:
+      containers: # this is a sequence (list)
+      - name: k8s-web-hello # one item of the list (a mapping/object)
+        image: dustycs/k8s-web-hello:v2 # fields inside the mapping: no dash
+        resources: # nested mapping
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+          requests:
+            memory: "64Mi"    # steady expected memory
+            cpu: "100m"  
+        ports: # ports can be a list too
+        - containerPort: 3000 # each port is an item in the ports list
