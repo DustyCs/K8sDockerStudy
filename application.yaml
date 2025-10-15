@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-web-to-nginx
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: 'https://gitlab.com/dustycs-inc/dustycs-web-nginx-k8s-argo.git'
+    targetRevision: HEAD
+    path: .
+  
+  destination:
+    server: https://kubernetes.default.svc # internal service name of kubernetes API server
+    namespace: myapp
+
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true  # create the destination namespace if it doesn't exist
+
+    automated:
+      selfHeal: true  # auto-sync if out of sync - overrides manual sync
+      prune: true     # delete resources that are no longer defined in Git
+
+  
