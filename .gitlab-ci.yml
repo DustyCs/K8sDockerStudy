@@ -6,8 +6,16 @@ run_tests:
 
 build_image:
   stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  # variables here can only be used in this job (override global variables?) if u want it to be global place it on top
+  variables:
+    IMAGE_NAME: dustycs/k8s-web-to-nginx
+    IMAGE_TAG: v3
+    DOCKER_TLS_CERTDIR: "/certs" # required for docker:dind to talk to each other
   before_script:
     - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASSWORD"
   script:
-    - docker build -t dustycs/k8s-web-to-nginx:v3 k8s-web-to-nginx 
-    - docker push dustycs/k8s-web-to-nginx:v3
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG k8s-web-to-nginx 
+    - docker push $IMAGE_NAME:$IMAGE_TAG
